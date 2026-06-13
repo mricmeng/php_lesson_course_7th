@@ -1,5 +1,26 @@
 <?php
     $cn = new mysqli("localhost","root","ServBay.dev","php23");
+    $cn->set_charset("utf8");
+    $lang = 'eng';
+    if(isset($_GET['lang'])){
+        $lang = $_GET['lang'];
+    }
+    $myLang = array(
+        "eng"=>array(
+            "id"=>"ID",
+            "name"=>"Name",
+            "photo"=>"Photo",
+            "status"=>"Status",
+            "lang"=>"Lang",
+        ),
+        "kh"=>array(
+            "id"=>"លេខរៀង",
+            "name"=>"ឈ្មោះ",
+            "photo"=>"រូបភាព",
+            "status"=>"ស្ថានភាព",
+            "lang"=>"ភាសា",
+        ),
+    );
     $id =1;
     //auto id
     $sql = "SELECT id FROM tbl_category ORDER BY id DESC";
@@ -26,18 +47,24 @@
 </head>
 
 <body>
+    <a href="index.php?lang=kh">Khmer</a>|<a href="index.php?lang=eng">English</a>
     <div class="frm">
         <form class='upl'>
-            <label for="">ID</label>
+            <label for=""><?php echo $myLang[$lang]['id']; ?></label>
             <input value="<?php echo $id; ?>" type="text" name="txt-id" id="txt-id" class="frm-control" readonly>
-            <label for="">Name</label>
+            <label for=""><?php echo $myLang[$lang]['lang']; ?></label>
+            <select name="txt-lang" id="txt-lang" class="frm-control">
+                <option value="eng">eng</option>
+                <option value="kh">kh</option>
+            </select>
+            <label for=""><?php echo $myLang[$lang]['name']; ?></label>
             <input type="text" name="txt-name" id="txt-name" class="frm-control">
-            <label for="">Status</label>
+            <label for=""><?php echo $myLang[$lang]['status']; ?></label>
             <select name="txt-status" id="txt-status" class="frm-control">
                 <option value="1">1</option>
                 <option value="2">2</option>
             </select>
-            <label for="">Photo</label>
+            <label for=""><?php echo $myLang[$lang]['photo']; ?></label>
             <div class="img-box">
                 <input type="file" name="txt-file" id="txt-file" class="txt-file">
                 <input type="hidden" name="txt-photo" id="txt-photo" class="txt-photo">
@@ -50,7 +77,9 @@
             <th width="50">ID</th>
             <th>Name</th>
             <th width="50">Photo</th>
+            <th width="50">Lang</th>
             <th width="50">Status</th>
+            <th width="50">Action</th>
         </tr>
         <?php
         $sql = "SELECT * FROM tbl_category ORDER BY id DESC";
@@ -65,6 +94,10 @@
                 <img src="<?php echo $row[2]; ?>" alt="<?php echo $row[2]; ?>">
             </td>
             <td align='center'><?php echo $row[3]; ?></td>
+            <td align='center'><?php echo $row[4]; ?></td>
+            <td>
+                <input type="button" value="Edit" class="btn-edit">
+            </td>
         </tr>
         <?php
             }
