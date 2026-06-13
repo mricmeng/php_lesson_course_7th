@@ -1,0 +1,34 @@
+<?php
+    $cn = new mysqli("localhost","root","ServBay.dev","php26_1");
+    $id = $_POST['txt-id'];
+    $cate = $_POST['txt-cate'];
+    $title = trim($_POST['txt-title']);
+    $title = $cn->real_escape_string($title);
+    $des = trim($_POST['txt-des']);
+    $des = str_replace("\n", "<br>", $des);
+    $des = $cn->real_escape_string($des);
+    $img = $_POST['txt-photo'];
+    $status = $_POST['txt-status'];
+    $editId = $_POST['txt-edit-id'];
+    $lang = $_POST['txt-lang'];
+    $msg['edit'] = false;
+    //check duplicate name
+    $sql = "SELECT * FROM tbl_item WHERE title='$title' && id != $id && cate_id = $cate";
+    $rs = $cn->query($sql);
+    if($rs->num_rows > 0){
+        $msg['dpl']= true;
+    }else{
+        $msg['dpl']= false;
+        if($editId == 0){
+            $sql = "INSERT INTO tbl_item VALUES (null, $cate, '$title', '$des', '$img',$lang ,$status)";
+            $cn->query($sql);
+            $msg['id'] = $cn->insert_id;// $last_id = $cn->insert_id;
+        }else{
+            $sql = "UPDATE tbl_item SET cate_id =$cate, title='$title', des ='$des', img='$img',lang='$lang', status='$status'  WHERE id=$editId ";
+            $cn->query($sql);
+            $msg['edit'] = true;
+        }
+    }
+    echo json_encode($msg);
+
+?>

@@ -1,0 +1,40 @@
+body {
+  margin:0;
+}
+.left-menu{
+  width: 10%;
+  height: 100%;
+  position:fixed;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  box-shadow: 1px 1px 5px 0 gray;
+}
+.left-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.left-menu ul li a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  text-align: center;
+  color: #333;
+  font-size: 25px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  
+}
+.left-menu ul li a i {
+ font-size: 35px;
+}
+.container {
+  width: 90%;
+  margin-left: 10%;
+  float: left;
+  background-color: antiquewhite;
+}
+img{
+  width: 200px;
+}

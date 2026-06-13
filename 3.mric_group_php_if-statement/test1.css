@@ -1,0 +1,16 @@
+.box1{
+  color: red;
+  width: 200px;
+  height: 150px;
+  background-color: orange;
+  font-size: 30px;
+
+}
+.box2{
+  color: white;
+  width: 200px;
+  height: 150px;
+  background-color: cornflowerblue;
+  font-size: 30px;
+  
+}
