@@ -50,27 +50,35 @@
     <a href="index.php?lang=kh">Khmer</a>|<a href="index.php?lang=eng">English</a>
     <div class="frm">
         <form class='upl'>
-            <input type="text" name="txt-edit-id" id="txt-edit-id" value="0">
-            <label for=""><?php echo $myLang[$lang]['id']; ?></label>
-            <input value="<?php echo $id; ?>" type="text" name="txt-id" id="txt-id" class="frm-control" readonly>
-            <label for=""><?php echo $myLang[$lang]['lang']; ?></label>
-            <select name="txt-lang" id="txt-lang" class="frm-control">
-                <option value="eng">eng</option>
-                <option value="kh">kh</option>
-            </select>
-            <label for=""><?php echo $myLang[$lang]['name']; ?></label>
-            <input type="text" name="txt-name" id="txt-name" class="frm-control">
-            <label for=""><?php echo $myLang[$lang]['status']; ?></label>
-            <select name="txt-status" id="txt-status" class="frm-control">
-                <option value="1">1</option>
-                <option value="2">2</option>
-            </select>
-            <label for=""><?php echo $myLang[$lang]['photo']; ?></label>
-            <div class="img-box">
-                <input type="file" name="txt-file" id="txt-file" class="txt-file">
-                <input type="hidden" name="txt-photo" id="txt-photo" class="txt-photo">
+            <div class="frm-2">
+                <input type="text" name="txt-edit-id" id="txt-edit-id" value="0">
+                <label for=""><?php echo $myLang[$lang]['id']; ?></label>
+                <input value="<?php echo $id; ?>" type="text" name="txt-id" id="txt-id" class="frm-control" readonly>
+                <label for=""><?php echo $myLang[$lang]['lang']; ?></label>
+                <select name="txt-lang" id="txt-lang" class="frm-control">
+                    <option value="eng">eng</option>
+                    <option value="kh">kh</option>
+                </select>
+                <label for=""><?php echo $myLang[$lang]['name']; ?></label>
+                <input type="text" name="txt-name" id="txt-name" class="frm-control">
+                <label for=""><?php echo $myLang[$lang]['status']; ?></label>
+                <select name="txt-status" id="txt-status" class="frm-control">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+                <label for=""><?php echo $myLang[$lang]['photo']; ?></label>
+                <div class="img-box">
+                    <input type="file" name="txt-file" id="txt-file" class="txt-file">
+                    <input type="hidden" name="txt-photo" id="txt-photo" class="txt-photo">
+                </div>
+                <a class="btn btn-post" id="btn-post"> <i class='fas fa-save'></i>Save</a>
+
             </div>
-            <a class="btn btn-post" id="btn-post"> <i class='fas fa-save'></i>Save</a>
+            <div class="frm-3">
+                <label for="">Description</label>
+                <textarea name="txt-des" id="txt-des" cols="30" rows="10" class="frm-control"></textarea>
+            </div>
+
         </form>
     </div>
     <table id="tblData">
@@ -95,9 +103,12 @@
                 <img src="<?php echo $row[2]; ?>" alt="<?php echo $row[2]; ?>">
             </td>
             <td align='center'><?php echo $row[3]; ?></td>
-            <td align='center'><?php echo $row[4]; ?></td>
+            <td align='center'><?php echo $row[5]; ?></td>
             <td>
                 <input type="button" value="Edit" class="btn-edit">
+            </td>
+            <td class="hidden">
+                <?php echo $row[4]; ?>
             </td>
         </tr>
         <?php
@@ -120,9 +131,9 @@ $(document).ready(function() {
         var id = tr.find('td:eq(0)').text().trim();
         var name = tr.find('td:eq(1)').text().trim();
         var photo = tr.find('td:eq(2) img').attr("src");
-
         var lang = tr.find('td:eq(3)').text().trim();
         var status = tr.find('td:eq(4)').text().trim();
+        var des = tr.find('td:eq(6)').text().trim();
         $('#txt-id').val(id);
         $('#txt-lang').val(lang);
         $('#txt-name').val(name);
@@ -132,6 +143,7 @@ $(document).ready(function() {
         });
         $('#txt-photo').val(photo);
         $('#txt-edit-id').val(id);
+        $('#txt-des').val(des);
         trInd = tr.index();
     });
     //upload photo to server
@@ -172,6 +184,7 @@ $(document).ready(function() {
         var status = Parent.find('#txt-status');
         var photo = Parent.find('#txt-photo');
         var img = '<img src=' + photo.val() + ' alt=' + photo.val() + '>';
+        var des = Parent.find('#txt-des');
         if (name.val() == '') {
             alert('Please input name');
             name.focus();
@@ -207,13 +220,16 @@ $(document).ready(function() {
                             .val());
                         tbl.find('tr:eq(' + trInd + ') td:eq(3)').text(lang.val());
                         tbl.find('tr:eq(' + trInd + ') td:eq(4)').text(status.val());
+                        tbl.find('tr:eq(' + trInd + ') td:eq(6)').text(des.val());
                     } else {
                         //add data to toble list
                         var tr = "<tr> <td align='center'>" + data.id + "</td>" +
                             " <td>" + name.val() + "</td>" +
                             " <td>" + img + "</td>" +
                             " <td>" + lang.val() + "</td>" +
-                            " <td>" + status.val() + "</td> <td>" + btnEdit + "</td></tr>";
+                            " <td>" + status.val() + "</td> <td>" + btnEdit + "</td>" +
+                            "<td class='hidden'>" + des.val() + "</td>" +
+                            "</tr>";
                         tbl.find('tr:eq(0)').after(tr);
                         // tbl.append(tr);
                         $('#txt-file').val('');

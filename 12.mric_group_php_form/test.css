@@ -4,8 +4,20 @@ body{
 div{
     box-sizing: border-box;
 }
+.hidden{
+    display: none;
+}
+.frm-2{
+    width: 30%;
+    float: left;
+}
+.frm-3{
+    width: 68%;
+    margin-left: 2%;
+    float: left;
+}
 .frm{
-    width: 500px;
+    width: 800px;
     margin: auto;
     overflow: hidden;
     padding: 15px;
