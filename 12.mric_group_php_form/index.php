@@ -50,6 +50,7 @@
     <a href="index.php?lang=kh">Khmer</a>|<a href="index.php?lang=eng">English</a>
     <div class="frm">
         <form class='upl'>
+            <input type="text" name="txt-edit-id" id="txt-edit-id" value="0">
             <label for=""><?php echo $myLang[$lang]['id']; ?></label>
             <input value="<?php echo $id; ?>" type="text" name="txt-id" id="txt-id" class="frm-control" readonly>
             <label for=""><?php echo $myLang[$lang]['lang']; ?></label>
@@ -109,6 +110,30 @@
 <script>
 $(document).ready(function() {
     var tbl = $('#tblData');
+    var trInd = 0;
+    var btnEdit = '<input type="button" value="Edit" class="btn-edit">';
+    var loading = "<div class='loading'></div>";
+    var imgBox = $('.img-box');
+    //get edit data
+    tbl.on('click', 'tr td .btn-edit', function() {
+        var tr = $(this).parents('tr');
+        var id = tr.find('td:eq(0)').text().trim();
+        var name = tr.find('td:eq(1)').text().trim();
+        var photo = tr.find('td:eq(2) img').attr("src");
+
+        var lang = tr.find('td:eq(3)').text().trim();
+        var status = tr.find('td:eq(4)').text().trim();
+        $('#txt-id').val(id);
+        $('#txt-lang').val(lang);
+        $('#txt-name').val(name);
+        $('#txt-status').val(status);
+        $('.img-box').css({
+            "background-image": "url(" + photo + ")"
+        });
+        $('#txt-photo').val(photo);
+        $('#txt-edit-id').val(id);
+        trInd = tr.index();
+    });
     //upload photo to server
     $('.txt-file').change(function() {
         var eThis = $(this);
@@ -124,9 +149,11 @@ $(document).ready(function() {
             dataType: "json",
             beforeSend: function() {
                 //work before success
+                imgBox.append(loading);
             },
             success: function(data) {
                 //work after success
+                imgBox.find('.loading').remove();
 
                 $('.img-box').css({
                     "background-image": "url(" + data.imgPath + ")"
@@ -141,6 +168,7 @@ $(document).ready(function() {
         var Parent = eThis.parents('.frm');
         var id = Parent.find('#txt-id');
         var name = Parent.find('#txt-name');
+        var lang = Parent.find('#txt-lang');
         var status = Parent.find('#txt-status');
         var photo = Parent.find('#txt-photo');
         var img = '<img src=' + photo.val() + ' alt=' + photo.val() + '>';
@@ -172,21 +200,31 @@ $(document).ready(function() {
                     alert('Duplicate name');
                     name.focus();
                 } else {
-                    //add data to toble list
-                    var tr = "<tr> <td align='center'>" + data.id + "</td>" +
-                        " <td>" + name.val() + "</td>" +
-                        " <td>" + img + "</td>" +
-                        " <td>" + status.val() + "</td> </tr>";
-                    tbl.find('tr:eq(0)').after(tr);
-                    // tbl.append(tr);
-                    $('#txt-file').val('');
-                    name.val('');
-                    photo.val('');
-                    $('.img-box').css({
-                        "background-image": "url(bg-img.png)"
-                    });
-                    name.focus();
-                    id.val(data.id + 1);
+                    if (data.edit == true) {
+                        // alert('Your data is updated!')
+                        tbl.find('tr:eq(' + trInd + ') td:eq(1)').text(name.val());
+                        tbl.find('tr:eq(' + trInd + ') td:eq(2) img').attr('src', photo
+                            .val());
+                        tbl.find('tr:eq(' + trInd + ') td:eq(3)').text(lang.val());
+                        tbl.find('tr:eq(' + trInd + ') td:eq(4)').text(status.val());
+                    } else {
+                        //add data to toble list
+                        var tr = "<tr> <td align='center'>" + data.id + "</td>" +
+                            " <td>" + name.val() + "</td>" +
+                            " <td>" + img + "</td>" +
+                            " <td>" + lang.val() + "</td>" +
+                            " <td>" + status.val() + "</td> <td>" + btnEdit + "</td></tr>";
+                        tbl.find('tr:eq(0)').after(tr);
+                        // tbl.append(tr);
+                        $('#txt-file').val('');
+                        name.val('');
+                        photo.val('');
+                        $('.img-box').css({
+                            "background-image": "url(bg-img.png)"
+                        });
+                        name.focus();
+                        id.val(data.id + 1);
+                    }
                 }
                 eThis.html("<i class='fas fa-save'></i>Save");
                 eThis.css({
