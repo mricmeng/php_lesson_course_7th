@@ -1,9 +1,29 @@
 <?php
     $cn = new mysqli("localhost","root","ServBay.dev","php23");
     $cn->set_charset("utf8");
+    $lang = 'eng';
+    if(isset($_GET['lang'])){
+        $lang = $_GET['lang'];
+    }
+    $myLang = array(
+        "eng"=>array(
+            "id"=>"ID",
+            "name"=>"Name",
+            "photo"=>"Photo",
+            "status"=>"Status",
+            "lang"=>"Lang",
+        ),
+        "kh"=>array(
+            "id"=>"លេខរៀង",
+            "name"=>"ឈ្មោះ",
+            "photo"=>"រូបភាព",
+            "status"=>"ស្ថានភាព",
+            "lang"=>"ភាសា",
+        ),
+    );
     $id =1;
     //auto id
-    $sql = "SELECT id FROM tbl_cate_item ORDER BY id DESC";
+    $sql = "SELECT id FROM tbl_category ORDER BY id DESC";
     $res = $cn->query($sql);
     $num = $res->num_rows;
     if($num > 0){
@@ -17,7 +37,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item</title>
+    <title>Category</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -27,86 +47,76 @@
 </head>
 
 <body>
+    <a href="index.php?lang=kh">Khmer</a>|<a href="index.php?lang=eng">English</a>
     <div class="frm">
-        <form class="upl">
-            <input type="text" name="txt-edit-id" id="txt-edit-id" value="0">
-            <label for="">ID</label>
-            <input value="<?php echo $id; ?>" type="text" name="txt-id" id="txt-id" class="frm-control">
-            <label for="">Category</label>
-            <select name="txt-category" id="txt-category" class="frm-control">
-                <option value="0"></option>
-                <?php
-                    $sql = "SELECT id, name FROM tbl_category WHERE status=1 ORDER BY id";
-                    $res = $cn->query($sql);
-                    if($res->num_rows > 0 ){
-                        while($row = $res->fetch_array()){
-                        ?>
-                <option value="<?php echo $row[0]; ?>">
-                    <?php echo $row[1]; ?>
-                </option>
-                <?php
-                        }
-                    }
-                ?>
-            </select>
-            <label for="">Title</label>
-            <input type="text" name="txt-title" id="txt-title" class="frm-control">
-            <label for="">Description</label>
-            <textarea name="txt-des" id="txt-des" cols="30" Rows="10" class="frm-control"></textarea>
-            <label for="">Photo</label>
-            <div class="img-box">
-                <input type="file" name="txt-file" id="txt-file" class="txt-file">
-                <input type="hidden" name="txt-photo" id="txt-photo" class="txt-photo">
+        <form class='upl'>
+            <div class="frm-2">
+                <input type="text" name="txt-edit-id" id="txt-edit-id" value="0">
+                <label for=""><?php echo $myLang[$lang]['id']; ?></label>
+                <input value="<?php echo $id; ?>" type="text" name="txt-id" id="txt-id" class="frm-control" readonly>
+                <label for=""><?php echo $myLang[$lang]['lang']; ?></label>
+                <select name="txt-lang" id="txt-lang" class="frm-control">
+                    <option value="eng">eng</option>
+                    <option value="kh">kh</option>
+                </select>
+                <label for=""><?php echo $myLang[$lang]['name']; ?></label>
+                <input type="text" name="txt-name" id="txt-name" class="frm-control">
+                <label for=""><?php echo $myLang[$lang]['status']; ?></label>
+                <select name="txt-status" id="txt-status" class="frm-control">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+                <label for=""><?php echo $myLang[$lang]['photo']; ?></label>
+                <div class="img-box">
+                    <input type="file" name="txt-file" id="txt-file" class="txt-file">
+                    <input type="hidden" name="txt-photo" id="txt-photo" class="txt-photo">
+                </div>
+                <a class="btn btn-post" id="btn-post"> <i class='fas fa-save'></i>Save</a>
+
             </div>
-            <label for="">Status</label>
-            <select name="txt-status" id="txt-status" class="frm-control">
-                <option value="1">1</option>
-                <option value="2">2</option>
-            </select>
-            <a class="btn btn-post" id="btn-post"> <i class='fas fa-save'></i>Save</a>
+            <div class="frm-3">
+                <label for="">Description</label>
+                <textarea name="txt-des" id="txt-des" cols="30" rows="10" class="frm-control"></textarea>
+            </div>
+
         </form>
     </div>
     <table id="tblData">
         <tr>
             <th width="50">ID</th>
-            <th width="100">Category</th>
-            <th>Title</th>
+            <th>Name</th>
             <th width="50">Photo</th>
+            <th width="50">Lang</th>
             <th width="50">Status</th>
             <th width="50">Action</th>
         </tr>
         <?php
-        $sql = "SELECT
-            tbl_cate_item.id, 
-            tbl_category.name, 
-            tbl_cate_item.title,
-            tbl_cate_item.des,
-            tbl_cate_item.photo,
-            tbl_cate_item.status,
-            tbl_cate_item.cate_id
-            FROM tbl_cate_item INNER JOIN tbl_category ON tbl_category.id = tbl_cate_item.cate_id
-            ORDER BY tbl_cate_item.id DESC ";
+        $sql = "SELECT * FROM tbl_category ORDER BY id DESC";
         $res = $cn->query($sql);
-        if($res->num_rows>0){
+        if($res->num_rows > 0){
             while($row = $res->fetch_array()){
                 ?>
         <tr>
-            <td><?php echo $row[0]; ?></td>
-            <td><span class="hidden"><?php echo $row[6]; ?></span> <?php echo $row[1]; ?></td>
-            <td><?php echo $row[2]; ?></td>
-            <td class="hidden"><?php echo $row[3]; ?></td>
-            <td><img src="<?php echo $row[4]; ?>" alt=""></td>
-            <td><?php echo $row[5]; ?></td>
+            <td align='center'><?php echo $row[0]; ?></td>
+            <td><?php echo $row[1]; ?></td>
+            <td>
+                <img src="<?php echo $row[2]; ?>" alt="<?php echo $row[2]; ?>">
+            </td>
+            <td align='center'><?php echo $row[3]; ?></td>
+            <td align='center'><?php echo $row[5]; ?></td>
             <td>
                 <input type="button" value="Edit" class="btn-edit">
+            </td>
+            <td class="hidden">
+                <?php echo $row[4]; ?>
             </td>
         </tr>
         <?php
             }
         }
-
         ?>
     </table>
+
 </body>
 <script>
 $(document).ready(function() {
@@ -119,15 +129,14 @@ $(document).ready(function() {
     tbl.on('click', 'tr td .btn-edit', function() {
         var tr = $(this).parents('tr');
         var id = tr.find('td:eq(0)').text().trim();
-        var category = tr.find('td:eq(1) span').text().trim();
-        var title = tr.find('td:eq(2)').text().trim();
-        var des = tr.find('td:eq(3)').text().trim();
-        var photo = tr.find('td:eq(4) img').attr("src");
-        var status = tr.find('td:eq(5)').text().trim();
-        // alert(category);
+        var name = tr.find('td:eq(1)').text().trim();
+        var photo = tr.find('td:eq(2) img').attr("src");
+        var lang = tr.find('td:eq(3)').text().trim();
+        var status = tr.find('td:eq(4)').text().trim();
+        var des = tr.find('td:eq(6)').text().trim();
         $('#txt-id').val(id);
-        $('#txt-category').val(category);
-        $('#txt-title').val(title);
+        $('#txt-lang').val(lang);
+        $('#txt-name').val(name);
         $('#txt-status').val(status);
         $('.img-box').css({
             "background-image": "url(" + photo + ")"
@@ -170,8 +179,8 @@ $(document).ready(function() {
         var eThis = $(this);
         var Parent = eThis.parents('.frm');
         var id = Parent.find('#txt-id');
-        var name = Parent.find('#txt-title');
-        var category = Parent.find('#txt-category');
+        var name = Parent.find('#txt-name');
+        var lang = Parent.find('#txt-lang');
         var status = Parent.find('#txt-status');
         var photo = Parent.find('#txt-photo');
         var img = '<img src=' + photo.val() + ' alt=' + photo.val() + '>';
@@ -184,7 +193,7 @@ $(document).ready(function() {
         var frm = eThis.closest('form.upl');
         var frm_data = new FormData(frm[0]);
         $.ajax({
-            url: 'save-item.php',
+            url: 'save-category.php',
             type: 'POST',
             data: frm_data,
             contentType: false,
